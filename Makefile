@@ -1,5 +1,5 @@
 CFLAGS= -g -O2
-all: alg
+all: alg crypt
 .c:
 	gcc $(CFLAGS) -o $@ $@.c
 .cpp:

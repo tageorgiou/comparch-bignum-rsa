@@ -30,5 +30,5 @@ eea_t eea(int x, int y) {
 }
 int main(int argc, char* argv[])
 {
-	printf("%d %d\n",eea(54,30));
+	printf("%d %d\n",eea(17,3120));
 }
