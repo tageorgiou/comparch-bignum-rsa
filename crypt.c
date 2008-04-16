@@ -38,13 +38,15 @@ eea_t eea(bignum x, bignum y) {
 }
 int main(int argc, char* argv[])
 {
-	bignum p = 5227, q = 5113;
+	bignum p = 61, q = 53;
 	bignum n = p*q;
 	bignum t = (p-1)*(q-1);
-	bignum e = 65539;
+	bignum e = 17;
 	eea_t tmp = eea(e,t);
 	printf("%lld %lld\n",eea(e,t));
 	bignum d = tmp.x;
+	if (d < 0) 
+		d+=t;
 	//d=2753;
 	printf("p:%lld q:%lld n:%lld t:%lld\n",p,q,n,t);
 	printf("e:%lld d:%lld\n",e,d);
