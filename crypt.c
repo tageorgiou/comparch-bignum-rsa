@@ -5,6 +5,14 @@ typedef struct {
 	bignum x;
 	bignum y;
 } eea_t;
+typedef struct {
+	bignum n;
+	bignum d;
+} priv_key;
+typedef struct {
+	bignum n;
+	bignum e;
+} pub_key;
 void printbin(uint in)
 {
 	unsigned int mask;
@@ -12,7 +20,7 @@ void printbin(uint in)
 		putchar(!!(in&mask)+'0');
 	putchar('\n');
 }
-bignum kapow(long long b, unsigned long long p, int mod)
+bignum kapow(long long b, unsigned long long p, bignum mod)
 {
 	long long ans = 1;
 	while (p) {
@@ -36,22 +44,34 @@ eea_t eea(bignum x, bignum y) {
 		return tmp;
 	}
 }
+/*bignum encrypt(pub_key key, uint m)
+{
+	return kapow(key->c,m,key->n);
+}
+bignum decrypt(priv_key key, uint m)
+{
+
+}*/
 int main(int argc, char* argv[])
 {
-	bignum p = 61, q = 53;
+	bignum p = 54121, q = 48733;
 	bignum n = p*q;
 	bignum t = (p-1)*(q-1);
-	bignum e = 17;
+	bignum e = 12553;
 	eea_t tmp = eea(e,t);
 	printf("%lld %lld\n",eea(e,t));
 	bignum d = tmp.x;
 	if (d < 0) 
 		d+=t;
 	//d=2753;
-	printf("p:%lld q:%lld n:%lld t:%lld\n",p,q,n,t);
+/*	printf("p:%lld q:%lld n:%lld t:%lld\n",p,q,n,t);
 	printf("e:%lld d:%lld\n",e,d);
-	int m = atoi(argv[1]);
+	uint m = atoi(argv[1]);
+	//int m;
+	//m = *(int*)"hel";
 	bignum c = kapow(m,e,n);
-	int dec = kapow(c,d,n);
+	uint dec = kapow(c,d,n);
 	printf("orig:%d enc:%lld dec:%d\n",m,c,dec);
+	//printf("orig:%s dec:%s\n",&m,&dec);
+	*/
 }
