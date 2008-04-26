@@ -98,15 +98,25 @@ int is_zero(bignum a)
 
 void mul(bignum a, bignum b)
 {
+	int sign;
 	volatile bignum c = copy(a);
+	sign=BIT(c,SIZE<<3-1);
+	if (sign)
+		neg(c);
 	memset(a,0,SIZE);
 	volatile bignum b2 = copy(b);
+	if (BIT(b2,SIZE<<3-1)) {
+		sign=!sign;
+		neg(b2);
+	}
 	while (!is_zero(b2)) {
 		if (BIT(b2,0)==1)
 			add(a,c);
 		shr(b2,1);
 		shl(c,1);
 	}
+	if (sign)
+		neg(a);
 	free(c);
 	free(b2);
 }
