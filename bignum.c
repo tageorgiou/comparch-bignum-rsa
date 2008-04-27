@@ -13,6 +13,7 @@ void sub(bignum a,bignum b);
 void shl(bignum a, int b);
 void shr(bignum a, int b);
 void printbin(bignum a);
+void mul(bignum a, bignum b);
 bignum zero();
 bignum copy(bignum a);
 bignum bignum_from_int(long long a);
@@ -54,11 +55,13 @@ void neg(bignum a) {
 
 void sub(bignum a,bignum b)
 {
-	bignum s = zero();
-	memcpy(s,b,SIZE);
-	neg(s);
-	add(a,s);
-	free(s);
+	if (a==b) {
+		memset(a,0,SIZE);
+		return;
+	}
+	neg(b);
+	add(a,b);
+	neg(b);
 }
 
 void shl(bignum a, int b)
@@ -119,6 +122,11 @@ void mul(bignum a, bignum b)
 		neg(a);
 	free(c);
 	free(b2);
+}
+
+void idiv(bignum a, bignum b)
+{
+
 }
 
 void printbin(bignum num)
