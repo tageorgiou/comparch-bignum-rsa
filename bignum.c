@@ -15,6 +15,8 @@ void shl(bignum a, int b);
 void shr(bignum a, int b);
 void printbin(bignum a);
 void mul(bignum a, bignum b);
+void mod(bignum a, bignum b);
+void idiv(bignum a, bignum b);
 int cmp(bignum a, bignum b);
 bignum zero();
 bignum copy(bignum a);
@@ -180,6 +182,35 @@ void idiv(volatile bignum a, bignum b)
 		neg(q);
 	memcpy(a,q,SIZE);
 	free(q);
+	free(b2);
+}
+
+void mod(volatile bignum a, bignum b)
+{
+	int sign = BIT(a,SIGNBIT);
+	if (sign)
+		neg(a);
+	volatile int c = 0;
+	volatile bignum b2 = copy(b);
+	if (BIT(b2,SIGNBIT)) {
+		sign=!sign;
+		neg(b2);
+	}
+	while (cmp(b2,a) < 0) {
+		shl(b2,1);
+		c++;
+	}
+	while (c >= 0) {
+		if (cmp(b2,a) <= 0) {
+			sub(a,b2);
+		}
+		shr(b2,1);
+		c--;
+	}
+	//NOTE: a is remainder before this line
+ 	if (sign)
+ 		neg(a);
+// 	memcpy(a,q,SIZE);
 	free(b2);
 }
 
