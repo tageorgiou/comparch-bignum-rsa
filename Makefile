@@ -1,4 +1,4 @@
-CFLAGS= -g -O2
+CFLAGS= -g -O2 -m32
 all: alg crypt decrypt encrypt bignum
 .c:
 	gcc $(CFLAGS) -o $@ $@.c
