@@ -164,17 +164,9 @@ void idiv(volatile bignum a, bignum b)
 		shl(b2,1);
 		c++;
 	}
-//	printf("C:%d\n",c);
 	while (c >= 0) {
-//		printf("cmp:\n");
-//		printbin(b2);
-//		printbin(a);
 		if (cmp(b2,a) > 0) {
-//			printf("--\n");
-//			printbin(q);
 			SETBIT(q,c,0);
-//			printbin(q);
-//			printf("--\n");
 		}
 		else {
 			SETBIT(q,c,1);
