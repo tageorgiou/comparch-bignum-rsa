@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define SIZE 8
+#define SIGNBIT (SIZE<<3-1)
 #define BIT(IN,N) ((IN)[(SIZE-1)-(N>>3)]>>(N&7)&1)
 #define SETBIT(IN,N,V) ((IN)[(SIZE-1)-(N>>3)]=(((IN)[(SIZE-1)-(N>>3)]|((V)<<(N&7))&(V)<<(N&7))))
 typedef unsigned char* bignum;
@@ -14,6 +15,7 @@ void shl(bignum a, int b);
 void shr(bignum a, int b);
 void printbin(bignum a);
 void mul(bignum a, bignum b);
+int cmp(bignum a, bignum b);
 bignum zero();
 bignum copy(bignum a);
 bignum bignum_from_int(long long a);
@@ -53,7 +55,7 @@ void neg(bignum a) {
 	inc(a);
 }
 
-void sub(bignum a,bignum b)
+void sub(volatile bignum a, volatile bignum b)
 {
 	if (a==b) {
 		memset(a,0,SIZE);
@@ -99,6 +101,28 @@ int is_zero(bignum a)
 	return z;
 }
 
+int cmp(bignum a, bignum b)
+{
+	int r=0,i;
+	if (BIT(a,SIZE<<3-1) < BIT(b,SIZE<<3-1))
+		return 1;
+	if (BIT(a,SIGNBIT) > BIT(b,SIGNBIT))
+		return -1;
+	for (i=0; i < SIZE; i++) {
+		if (a[i] < b[i]) {
+			r=-1;
+			break;
+		}
+		if (a[i] > b[i]) {
+			r=1;
+			break;
+		}
+	}
+	if (BIT(a,SIGNBIT) == 1)
+		r=-r;
+	return r;
+}
+
 void mul(bignum a, bignum b)
 {
 	int sign;
@@ -124,9 +148,47 @@ void mul(bignum a, bignum b)
 	free(b2);
 }
 
-void idiv(bignum a, bignum b)
+void idiv(volatile bignum a, bignum b)
 {
-
+	int sign = BIT(a,SIGNBIT);
+	if (sign)
+		neg(a);
+	volatile int c = 0;
+	volatile bignum q = zero();
+	volatile bignum b2 = copy(b);
+	if (BIT(b2,SIGNBIT)) {
+		sign=!sign;
+		neg(b2);
+	}
+	while (cmp(b2,a) < 0) {
+		shl(b2,1);
+		c++;
+	}
+//	printf("C:%d\n",c);
+	while (c >= 0) {
+//		printf("cmp:\n");
+//		printbin(b2);
+//		printbin(a);
+		if (cmp(b2,a) > 0) {
+//			printf("--\n");
+//			printbin(q);
+			SETBIT(q,c,0);
+//			printbin(q);
+//			printf("--\n");
+		}
+		else {
+			SETBIT(q,c,1);
+			sub(a,b2);
+		}
+		shr(b2,1);
+		c--;
+	}
+	//NOTE: a is remainder before this line
+	if (sign)
+		neg(q);
+	memcpy(a,q,SIZE);
+	free(q);
+	free(b2);
 }
 
 void printbin(bignum num)
@@ -143,11 +205,11 @@ void printbin(bignum num)
 
 int main(int argc, char* argv[])
 {
-	bignum five = bignum_from_int(23);
+	bignum five = bignum_from_int(25);
 	printbin(five);
-	bignum four = bignum_from_int(43);
+	bignum four = bignum_from_int(5);
 	printbin(four);
-	mul(five,four);
+	idiv(five,four);
 	printbin(five);
 
 	free(four);
