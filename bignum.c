@@ -1,26 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "bignum.h"
+
 #define SIZE 8
 #define SIGNBIT (SIZE<<3-1)
 #define BIT(IN,N) ((IN)[(SIZE-1)-(N>>3)]>>(N&7)&1)
 #define SETBIT(IN,N,V) ((IN)[(SIZE-1)-(N>>3)]=(((IN)[(SIZE-1)-(N>>3)]|((V)<<(N&7))&(V)<<(N&7))))
-typedef unsigned char* bignum;
-extern void add(bignum a,bignum b);
-void not(bignum a);
-void neg(bignum a);
-void inc(bignum a);
-void sub(bignum a,bignum b);
-void shl(bignum a, int b);
-void shr(bignum a, int b);
-void printbin(bignum a);
-void mul(bignum a, bignum b);
-void mod(bignum a, bignum b);
-void idiv(bignum a, bignum b);
-int cmp(bignum a, bignum b);
-bignum zero();
-bignum copy(bignum a);
-bignum bignum_from_int(long long a);
 
 bignum bignum_from_int(long long a)
 {
@@ -226,15 +213,38 @@ void printbin(bignum num)
 	printf("\n");
 }
 
-int main(int argc, char* argv[])
+long long long_from_bignum(bignum a)
 {
-	bignum five = bignum_from_int(25);
-	printbin(five);
-	bignum four = bignum_from_int(5);
-	printbin(four);
-	idiv(five,four);
-	printbin(five);
+	long long ret = 0;
+	int i;
+	for (i = 0; i < 8; i++) {
+		ret |= a[SIZE-i-1]<<(i<<3);
+	}
+	return ret;
+}
 
-	free(four);
-	free(five);
+void _printnum(volatile bignum a, bignum base)
+{
+	if (is_zero(a))
+		return;
+	volatile bignum modded = copy(a);
+	mod(modded,base);
+	char printval=long_from_bignum(modded) + '0';
+	free(modded);
+	idiv(a,base);
+	_printnum(a,base);
+	printf("%c",printval);
+}
+
+void printnum(bignum a)
+{
+	bignum a2 = copy(a);
+	if (BIT(a2,SIGNBIT)==1) {
+		printf("-");
+		neg(a2);
+	}
+	bignum base = bignum_from_int(10);
+	_printnum(a2,base);
+	printf("\n");
+	free(a2);
 }
