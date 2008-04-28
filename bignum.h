@@ -1,0 +1,18 @@
+typedef unsigned char* bignum;
+void printbin(bignum a);
+void add(bignum a,bignum b);
+void not(bignum a);
+void neg(bignum a);
+void inc(bignum a);
+void sub(bignum a,bignum b);
+void shl(bignum a, int b);
+void shr(bignum a, int b);
+void printbin(bignum a);
+void mul(bignum a, bignum b);
+void mod(bignum a, bignum b);
+void idiv(bignum a, bignum b);
+int cmp(bignum a, bignum b);
+int is_zero(bignum a);
+bignum zero();
+bignum copy(bignum a);
+bignum bignum_from_int(long long a);
