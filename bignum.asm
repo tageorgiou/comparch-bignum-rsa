@@ -1,4 +1,4 @@
-%define size 16
+%define size 128
 global add
 global not
 global inc
@@ -32,9 +32,6 @@ inc:
 	mov eax,ebx
 	pop ebp
 	ret
-sub:
-
-mul:
 not:
 	push ebp
 	mov ebp,esp

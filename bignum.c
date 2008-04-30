@@ -4,10 +4,22 @@
 
 #include "bignum.h"
 
-#define SIZE 16
-#define SIGNBIT (SIZE<<3-1)
+#define SIZE 128
+#define SIGNBIT ((SIZE<<3)-1)
 #define BIT(IN,N) ((IN)[(SIZE-1)-(N>>3)]>>(N&7)&1)
 #define SETBIT(IN,N,V) ((IN)[(SIZE-1)-(N>>3)]=(((IN)[(SIZE-1)-(N>>3)]|((V)<<(N&7))&(V)<<(N&7))))
+#define COPY(A,B) (memcpy((A),(B),SIZE))
+
+int leftmostbit(bignum a)
+{
+	int i;
+	int lbit = -1;
+	for (i = 0; i <= SIGNBIT; i++) {
+		if (BIT(a,i)==1)
+			lbit=i;
+	}
+	return lbit;
+}
 
 bignum bignum_from_int(long long a)
 {
@@ -34,13 +46,11 @@ bignum bignum_from_string(char* string)
 	int negative = 0;
 	for (i = 0; i < strlen(string); i++) {
 		if (string[i] == '-') {
-			printf("!!!!!");
 			negative=!negative;
 			continue;
 		}
 		mul(a,b);
 		d = bignum_from_int(string[i]-'0');
-		printf("%d\n",string[i]-'0');
 		add(a,d);
 		free(d);
 	}
@@ -80,29 +90,35 @@ void sub(volatile bignum a, volatile bignum b)
 	neg(b);
 }
 
+
+static unsigned char shlbuf[SIZE];
+int I = 0;
+int B = 0;
 void shl(bignum a, int b)
 {
-	bignum c = copy(a);
+	COPY(shlbuf,a);
 	memset(a,0,SIZE);
 	int i;
-	for (i = SIZE<<3-1; i >= b; i--)
-		SETBIT(a,i,BIT(c,i-b));
+	for (i = SIGNBIT; i >= b; i--) {
+		I=i;
+		B=b;
+		SETBIT(a,i,BIT(shlbuf,i-b));
+	}
 	for (i = b-1; i >= 0; i--)
 		SETBIT(a,i,0);
-	free(c);
 }
 
+static unsigned char shrbuf[SIZE];
 void shr(bignum a, int b)
 {
-	bignum c = copy(a);
+	COPY(shrbuf,a);
 	memset(a,0,SIZE);
 	int i;
 	for (i = b; i < SIZE<<3; i++) {
-		SETBIT(a,i-b,BIT(c,i));
+		SETBIT(a,i-b,BIT(shrbuf,i));
 	}
-	for (i = SIZE<<3-b; i < SIZE<<3; i++)
+	for (i = (SIZE<<3)-b; i < SIZE<<3; i++)
 		SETBIT(a,i,0);
-	free(c);
 }
 
 int is_zero(bignum a)
@@ -118,7 +134,7 @@ int is_zero(bignum a)
 int cmp(bignum a, bignum b)
 {
 	int r=0,i;
-	if (BIT(a,SIZE<<3-1) < BIT(b,SIZE<<3-1))
+	if (BIT(a,SIGNBIT) < BIT(b,SIGNBIT))
 		return 1;
 	if (BIT(a,SIGNBIT) > BIT(b,SIGNBIT))
 		return -1;
@@ -137,16 +153,32 @@ int cmp(bignum a, bignum b)
 	return r;
 }
 
+int ucmp(bignum a, bignum b)
+{
+	int r=0,i;
+	for (i=0; i < SIZE; i++) {
+		if (a[i] < b[i]) {
+			r=-1;
+			break;
+		}
+		if (a[i] > b[i]) {
+			r=1;
+			break;
+		}
+	}
+	return r;
+}
+
 void mul(bignum a, bignum b)
 {
 	int sign;
 	volatile bignum c = copy(a);
-	sign=BIT(c,SIZE<<3-1);
+	sign=BIT(c,SIGNBIT);
 	if (sign)
 		neg(c);
 	memset(a,0,SIZE);
 	volatile bignum b2 = copy(b);
-	if (BIT(b2,SIZE<<3-1)) {
+	if (BIT(b2,SIGNBIT)) {
 		sign=!sign;
 		neg(b2);
 	}
@@ -174,7 +206,7 @@ void idiv(volatile bignum a, bignum b)
 		sign=!sign;
 		neg(b2);
 	}
-	while (cmp(b2,a) < 0) {
+	while (ucmp(b2,a) < 0) {
 		shl(b2,1);
 		c++;
 	}
@@ -208,7 +240,7 @@ void mod(volatile bignum a, bignum b)
 		sign=!sign;
 		neg(b2);
 	}
-	while (cmp(b2,a) < 0) {
+	while (ucmp(b2,a) < 0) {
 		shl(b2,1);
 		c++;
 	}
