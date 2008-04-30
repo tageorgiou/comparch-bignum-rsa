@@ -165,29 +165,29 @@ int ucmp(bignum a, bignum b)
 	return r;
 }
 
+static unsigned char mulbufc[SIZE];
+static unsigned char mulbufb[SIZE];
 void mul(bignum a, bignum b)
 {
 	int sign;
-	volatile bignum c = copy(a);
-	sign=BIT(c,SIGNBIT);
+	COPY(mulbufc,a);
+	sign=BIT(mulbufc,SIGNBIT);
 	if (sign)
-		neg(c);
+		neg(mulbufc);
 	memset(a,0,SIZE);
-	volatile bignum b2 = copy(b);
-	if (BIT(b2,SIGNBIT)) {
+	COPY(mulbufb,b);
+	if (BIT(mulbufb,SIGNBIT)) {
 		sign=!sign;
-		neg(b2);
+		neg(mulbufb);
 	}
-	while (!is_zero(b2)) {
-		if (BIT(b2,0)==1)
-			add(a,c);
-		shr(b2,1);
-		shl(c,1);
+	while (!is_zero(mulbufb)) {
+		if (BIT(mulbufb,0)==1)
+			add(a,mulbufc);
+		shr(mulbufb,1);
+		shl(mulbufc,1);
 	}
 	if (sign)
 		neg(a);
-	free(c);
-	free(b2);
 }
 
 void idiv(volatile bignum a, bignum b)
