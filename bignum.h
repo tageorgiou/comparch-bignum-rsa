@@ -16,3 +16,7 @@ int is_zero(bignum a);
 bignum zero();
 bignum copy(bignum a);
 bignum bignum_from_int(long long a);
+bignum bignum_from_string(char* string);
+long long long_from_bignum(bignum a);
+void printnum(bignum a);
+

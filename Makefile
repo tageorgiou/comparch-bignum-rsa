@@ -6,7 +6,9 @@ all: alg crypt decrypt encrypt bignum
 	g++ $(CFLAGS) -o $@ $@.cpp
 clean:
 	rm alg crypt decrypt encrypt
-bignum: bignum.c bignum_asm bnmain.c
-	gcc $(CFLAGS) bnmain.c bignum.c bignums.o -o bignum
+bignumc: bignum.c
+	gcc $(CFLAGS) -O0 bignum.c -c
+bignum: bignumc bignum_asm bnmain.c
+	gcc $(CFLAGS) bnmain.c bignum.o bignums.o -o bignum
 bignum_asm: bignum.asm
 	nasm -g -felf -o bignums.o bignum.asm

@@ -1,4 +1,4 @@
-%define size 8
+%define size 16
 global add
 global not
 global inc

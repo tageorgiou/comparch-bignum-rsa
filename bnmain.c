@@ -2,7 +2,8 @@
 #include "bignum.h"
 int main(int argc, char* argv[])
 {
-	volatile bignum s = bignum_from_int(12342);
+	bignum s = bignum_from_string(argv[1]);
+	printbin(s);
 	printnum(s);
 }
 

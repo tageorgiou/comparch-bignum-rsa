@@ -4,7 +4,7 @@
 
 #include "bignum.h"
 
-#define SIZE 8
+#define SIZE 16
 #define SIGNBIT (SIZE<<3-1)
 #define BIT(IN,N) ((IN)[(SIZE-1)-(N>>3)]>>(N&7)&1)
 #define SETBIT(IN,N,V) ((IN)[(SIZE-1)-(N>>3)]=(((IN)[(SIZE-1)-(N>>3)]|((V)<<(N&7))&(V)<<(N&7))))
@@ -23,6 +23,31 @@ bignum bignum_from_int(long long a)
 	if (sign)
 		neg(num);
 	return num;
+}
+
+bignum bignum_from_string(char* string)
+{
+	bignum b = bignum_from_int(10);
+	bignum d;
+	bignum a = zero();
+	int i;
+	int negative = 0;
+	for (i = 0; i < strlen(string); i++) {
+		if (string[i] == '-') {
+			printf("!!!!!");
+			negative=!negative;
+			continue;
+		}
+		mul(a,b);
+		d = bignum_from_int(string[i]-'0');
+		printf("%d\n",string[i]-'0');
+		add(a,d);
+		free(d);
+	}
+	free(b);
+	if (negative)
+		neg(a);
+	return a;
 }
 
 bignum copy(bignum a)
@@ -229,7 +254,7 @@ void _printnum(volatile bignum a, bignum base)
 		return;
 	volatile bignum modded = copy(a);
 	mod(modded,base);
-	char printval=long_from_bignum(modded) + '0';
+	volatile char printval=long_from_bignum(modded) + '0';
 	free(modded);
 	idiv(a,base);
 	_printnum(a,base);
@@ -238,7 +263,7 @@ void _printnum(volatile bignum a, bignum base)
 
 void printnum(bignum a)
 {
-	bignum a2 = copy(a);
+	volatile bignum a2 = copy(a);
 	if (BIT(a2,SIGNBIT)==1) {
 		printf("-");
 		neg(a2);
