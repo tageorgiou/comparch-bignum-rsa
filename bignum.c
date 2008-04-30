@@ -92,8 +92,6 @@ void sub(volatile bignum a, volatile bignum b)
 
 
 static unsigned char shlbuf[SIZE];
-int I = 0;
-int B = 0;
 void shl(bignum a, int b)
 {
 	COPY(shlbuf,a);
