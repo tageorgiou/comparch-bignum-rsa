@@ -100,8 +100,6 @@ void shl(bignum a, int b)
 	memset(a,0,SIZE);
 	int i;
 	for (i = SIGNBIT; i >= b; i--) {
-		I=i;
-		B=b;
 		SETBIT(a,i,BIT(shlbuf,i-b));
 	}
 	for (i = b-1; i >= 0; i--)
