@@ -276,28 +276,28 @@ long long long_from_bignum(bignum a)
 	return ret;
 }
 
+static unsigned char _printnumbufa[SIZE];
 void _printnum(volatile bignum a, bignum base)
 {
 	if (is_zero(a))
 		return;
-	volatile bignum modded = copy(a);
-	mod(modded,base);
-	volatile char printval=long_from_bignum(modded) + '0';
-	free(modded);
+	COPY(_printnumbufa,a);
+	mod(_printnumbufa,base);
+	volatile char printval=long_from_bignum(_printnumbufa) + '0';
 	idiv(a,base);
 	_printnum(a,base);
 	printf("%c",printval);
 }
 
+static unsigned char printnumbufa[SIZE];
 void printnum(bignum a)
 {
-	volatile bignum a2 = copy(a);
-	if (BIT(a2,SIGNBIT)==1) {
+	COPY(printnumbufa,a);
+	if (BIT(printnumbufa,SIGNBIT)==1) {
 		printf("-");
-		neg(a2);
+		neg(printnumbufa);
 	}
 	bignum base = bignum_from_int(10);
-	_printnum(a2,base);
+	_printnum(printnumbufa,base);
 	printf("\n");
-	free(a2);
 }
