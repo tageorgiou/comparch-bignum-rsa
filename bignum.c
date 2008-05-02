@@ -204,10 +204,11 @@ void idiv(volatile bignum a, bignum b)
 		sign=!sign;
 		neg(idivbufb);
 	}
-	while (ucmp(idivbufb,a) < 0) {
-		shl(idivbufb,1);
-		c++;
-	}
+	c=leftmostbit(a)-leftmostbit(idivbufb);
+	if (c<0)
+		c=0;
+	else
+		shl(idivbufb,c);
 	while (c >= 0) {
 		if (cmp(idivbufb,a) > 0) {
 			SETBIT(idivbufq,c,0);
