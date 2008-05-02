@@ -225,33 +225,33 @@ void idiv(volatile bignum a, bignum b)
 	COPY(a,idivbufq);
 }
 
+static unsigned char modbufb[SIZE];
 void mod(volatile bignum a, bignum b)
 {
 	int sign = BIT(a,SIGNBIT);
 	if (sign)
 		neg(a);
 	volatile int c = 0;
-	volatile bignum b2 = copy(b);
-	if (BIT(b2,SIGNBIT)) {
+	COPY(modbufb,b);
+	if (BIT(modbufb,SIGNBIT)) {
 		sign=!sign;
-		neg(b2);
+		neg(modbufb);
 	}
-	while (ucmp(b2,a) < 0) {
-		shl(b2,1);
+	while (ucmp(modbufb,a) < 0) {
+		shl(modbufb,1);
 		c++;
 	}
 	while (c >= 0) {
-		if (cmp(b2,a) <= 0) {
-			sub(a,b2);
+		if (cmp(modbufb,a) <= 0) {
+			sub(a,modbufb);
 		}
-		shr(b2,1);
+		shr(modbufb,1);
 		c--;
 	}
 	//NOTE: a is remainder before this line
  	if (sign)
  		neg(a);
 // 	memcpy(a,q,SIZE);
-	free(b2);
 }
 
 void printbin(bignum num)
