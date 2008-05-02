@@ -190,39 +190,39 @@ void mul(bignum a, bignum b)
 		neg(a);
 }
 
+static unsigned char idivbufq[SIZE];
+static unsigned char idivbufb[SIZE];
 void idiv(volatile bignum a, bignum b)
 {
 	int sign = BIT(a,SIGNBIT);
 	if (sign)
 		neg(a);
 	volatile int c = 0;
-	volatile bignum q = zero();
-	volatile bignum b2 = copy(b);
-	if (BIT(b2,SIGNBIT)) {
+	memset(idivbufq,0,SIZE);
+	COPY(idivbufb,b);
+	if (BIT(idivbufb,SIGNBIT)) {
 		sign=!sign;
-		neg(b2);
+		neg(idivbufb);
 	}
-	while (ucmp(b2,a) < 0) {
-		shl(b2,1);
+	while (ucmp(idivbufb,a) < 0) {
+		shl(idivbufb,1);
 		c++;
 	}
 	while (c >= 0) {
-		if (cmp(b2,a) > 0) {
-			SETBIT(q,c,0);
+		if (cmp(idivbufb,a) > 0) {
+			SETBIT(idivbufq,c,0);
 		}
 		else {
-			SETBIT(q,c,1);
-			sub(a,b2);
+			SETBIT(idivbufq,c,1);
+			sub(a,idivbufb);
 		}
-		shr(b2,1);
+		shr(idivbufb,1);
 		c--;
 	}
 	//NOTE: a is remainder before this line
 	if (sign)
-		neg(q);
-	memcpy(a,q,SIZE);
-	free(q);
-	free(b2);
+		neg(idivbufq);
+	COPY(a,idivbufq);
 }
 
 void mod(volatile bignum a, bignum b)
