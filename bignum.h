@@ -11,6 +11,7 @@ void printbin(bignum a);
 void mul(bignum a, bignum b);
 void mod(bignum a, bignum b);
 void idiv(bignum a, bignum b);
+void kapow(bignum a, bignum b, bignum m);
 int cmp(bignum a, bignum b);
 int ucmp(bignum a, bignum b);
 int is_zero(bignum a);

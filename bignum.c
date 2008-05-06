@@ -255,6 +255,25 @@ void mod(volatile bignum a, bignum b)
 // 	memcpy(a,q,SIZE);
 }
 
+static unsigned char kapowbufa[SIZE];
+static unsigned char kapowbufb[SIZE];
+void kapow(bignum a, bignum b, bignum m)
+{
+	COPY(kapowbufa,a);
+	COPY(kapowbufb,b);
+	memset(a,0,SIZE);
+	inc(a);
+	while (!is_zero(kapowbufb)) {
+		if (BIT(kapowbufb,0)==1) {
+			mul(a,kapowbufa);
+			mod(a,m);
+		}
+		shr(kapowbufb,1);
+		mul(kapowbufa,kapowbufa);
+		mod(kapowbufa,m);
+	}
+}
+
 void printbin(bignum num)
 {
 	int i;
