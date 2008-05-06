@@ -1,6 +1,5 @@
 #include <stdio.h>
-typedef long long bignum;
-typedef unsigned int uint;
+#include "bignum.h"
 typedef struct {
 	bignum x;
 	bignum y;
@@ -13,25 +12,7 @@ typedef struct {
 	bignum n;
 	bignum e;
 } pub_key;
-void printbin(uint in)
-{
-	unsigned int mask;
-	for (mask = 1<<31; mask; mask>>=1)
-		putchar(!!(in&mask)+'0');
-	putchar('\n');
-}
-bignum kapow(long long b, unsigned long long p, bignum mod)
-{
-	long long ans = 1;
-	while (p) {
-		if (p&1)
-			ans=(ans*b)%mod;
-		p>>=1;
-		b=(b*b)%mod;
-	}
-	return ans;
-}
-eea_t eea(bignum x, bignum y) {
+/*eea_t eea(bignum x, bignum y) {
 	if (x%y == 0) {
 		eea_t ret = {0,1};
 		return ret;
@@ -43,7 +24,7 @@ eea_t eea(bignum x, bignum y) {
 		tmp.y = a-tmp.y*(x/y);
 		return tmp;
 	}
-}
+}*/
 /*bignum encrypt(pub_key key, uint m)
 {
 	return kapow(key->c,m,key->n);
@@ -54,7 +35,7 @@ bignum decrypt(priv_key key, uint m)
 }*/
 int main(int argc, char* argv[])
 {
-	bignum p = 54121, q = 48733;
+/*	bignum p = 54121, q = 48733;
 	bignum n = p*q;
 	bignum t = (p-1)*(q-1);
 	bignum e = 12553;
@@ -62,7 +43,7 @@ int main(int argc, char* argv[])
 //	printf("%lld %lld\n",eea(e,t));
 	bignum d = tmp.x;
 	if (d < 0) 
-		d+=t;
+		d+=t;*/
 	//d=2753;
 /*	printf("p:%lld q:%lld n:%lld t:%lld\n",p,q,n,t);
 	printf("e:%lld d:%lld\n",e,d);
@@ -74,7 +55,7 @@ int main(int argc, char* argv[])
 	printf("orig:%d enc:%lld dec:%d\n",m,c,dec);
 	//printf("orig:%s dec:%s\n",&m,&dec);
 	*/
-	FILE* fin = fopen(argv[1],"r");
+/*	FILE* fin = fopen(argv[1],"r");
 	FILE* fout = fopen(argv[2],"w");
 	while (!feof(fin)) {
 		char m[4];
@@ -87,5 +68,5 @@ int main(int argc, char* argv[])
 		bignum out = kapow(*(unsigned int*)m,e,n);
 //		fprintf(fout,"%c%c%c%c%c%c",out);
 		fwrite(&out,1,8,fout);
-	}
+	}*/
 }
