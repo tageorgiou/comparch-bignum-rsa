@@ -320,4 +320,5 @@ void printnum(bignum a)
 	bignum base = bignum_from_int(10);
 	_printnum(printnumbufa,base);
 	printf("\n");
+	free(base);
 }
