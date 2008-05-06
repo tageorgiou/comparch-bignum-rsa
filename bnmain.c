@@ -8,5 +8,8 @@ int main(int argc, char* argv[])
 	kapow(s,s2,m);
 	printf("num:");
 	printnum(s);
+	free(s);
+	free(s2);
+	free(m);
 }
 
