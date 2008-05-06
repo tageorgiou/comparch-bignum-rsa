@@ -171,11 +171,11 @@ void mul(bignum a, bignum b)
 {
 	int sign;
 	COPY(mulbufc,a);
+	COPY(mulbufb,b);
 	sign=BIT(mulbufc,SIGNBIT);
 	if (sign)
 		neg(mulbufc);
 	memset(a,0,SIZE);
-	COPY(mulbufb,b);
 	if (BIT(mulbufb,SIGNBIT)) {
 		sign=!sign;
 		neg(mulbufb);
