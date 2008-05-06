@@ -35,6 +35,25 @@ bignum decrypt(priv_key key, uint m)
 }*/
 int main(int argc, char* argv[])
 {
+	bignum one = bignum_from_int(1);
+	bignum p,q,n,t,e;
+	p = bignum_from_int(61);
+	q = bignum_from_int(53);
+	n = copy(p);
+	mul(n,q);
+	t = copy(p);
+	sub(t,one);
+	mul(t,q);
+	sub(t,p);
+	inc(t);
+	printf("p:");
+	printnum(p);
+	printf("q:");
+	printnum(q);
+	printf("n:");
+	printnum(n);
+	printf("t:");
+	printnum(t);
 /*	bignum p = 54121, q = 48733;
 	bignum n = p*q;
 	bignum t = (p-1)*(q-1);
