@@ -12,3 +12,5 @@ bignum: bignumc bignum_asm bnmain.c
 	gcc $(CFLAGS) -O0 bnmain.c bignum.o bignums.o -o bignum
 bignum_asm: bignum.asm
 	nasm -g -felf -o bignums.o bignum.asm
+encrypt: encrypt.c bignum
+	gcc $(CFLAGS) -O0 -o encrypt encrypt.c bignum.o bignums.o -o encrypt
