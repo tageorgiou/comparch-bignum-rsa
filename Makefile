@@ -1,5 +1,5 @@
 CFLAGS= -g -O2 -m32
-all: alg crypt decrypt encrypt bignum
+all: alg crypt decrypt encrypt bignum primetest
 .c:
 	gcc $(CFLAGS) -o $@ $@.c
 .cpp:
@@ -12,3 +12,5 @@ bignum: bignumc bignum_asm bnmain.c
 	gcc $(CFLAGS) -O0 bnmain.c bignum.o bignums.o -o bignum
 bignum_asm: bignum.asm
 	nasm -g -felf -o bignums.o bignum.asm
+primetest: primetest.c bignum
+	gcc $(CFLAGS) -O0 primetest.c bignum.o bignums.o -o primetest
