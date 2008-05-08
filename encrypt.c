@@ -12,6 +12,33 @@ typedef struct {
 	bignum n;
 	bignum e;
 } pub_key;
+
+//static unsigned char eeabufa[SIZE];
+eea_t eea(bignum a, bignum b) {
+	bignum eeabufa = copy(a);
+//	COPY(eeabufa,a);
+	mod(eeabufa,b);
+	if (is_zero(eeabufa)) {
+		eea_t retval;
+		retval.x = zero();
+		retval.y = zero();
+		inc(retval.y);
+		free(eeabufa);
+		return retval;
+	} else {
+		eea_t retval = eea(b,eeabufa);
+		bignum tmp = retval.x;
+		retval.x = retval.y;
+		retval.y = copy(a);
+		idiv(retval.y,b);
+		mul(retval.y,retval.x);
+		neg(retval.y);
+		add(retval.y,tmp);
+		free(tmp);
+		free(eeabufa);
+		return retval;
+	}
+}
 /*eea_t eea(bignum x, bignum y) {
 	if (x%y == 0) {
 		eea_t ret = {0,1};
@@ -35,10 +62,11 @@ bignum decrypt(priv_key key, uint m)
 }*/
 int main(int argc, char* argv[])
 {
+	printf("size:%d\n",SIZE);
 	bignum one = bignum_from_int(1);
 	bignum p,q,n,t,e;
-	p = bignum_from_int(61);
-	q = bignum_from_int(53);
+	p = bignum_from_int(54121);
+	q = bignum_from_int(48733);
 	n = copy(p);
 	mul(n,q);
 	t = copy(p);
@@ -46,6 +74,7 @@ int main(int argc, char* argv[])
 	mul(t,q);
 	sub(t,p);
 	inc(t);
+	e = bignum_from_int(12553);
 	printf("p:");
 	printnum(p);
 	printf("q:");
@@ -54,6 +83,33 @@ int main(int argc, char* argv[])
 	printnum(n);
 	printf("t:");
 	printnum(t);
+	printf("e:");
+	printnum(e);
+	eea_t tmp = eea(e,t);
+	printnum(tmp.x);
+	printnum(tmp.y);
+	bignum d = tmp.x;
+	bignum zeronum = zero();
+	if (cmp(d,zeronum) < 0) {
+		add(d,t);
+	}
+	printnum(d);
+	printf("-------\n");
+	FILE* fin = fopen(argv[1],"r");
+	FILE* fout = fopen(argv[2],"w");
+	while (!feof(fin)) {
+		char m[4];
+		int i;
+		for (i = 0; i < 4; i++) {
+			m[i] = fgetc(fin);
+			if (feof(fin))
+				m[i] = 0;
+		}
+		bignum out = bignum_from_int(*(unsigned int*)m);
+		kapow(out,e,n);
+		long long outnum = long_from_bignum(out);
+		fwrite(&outnum,1,8,fout);
+	}
 /*	bignum p = 54121, q = 48733;
 	bignum n = p*q;
 	bignum t = (p-1)*(q-1);
