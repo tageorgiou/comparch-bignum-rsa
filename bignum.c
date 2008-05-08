@@ -4,11 +4,9 @@
 
 #include "bignum.h"
 
-#define SIZE 128
 #define SIGNBIT ((SIZE<<3)-1)
 #define BIT(IN,N) ((IN)[(SIZE-1)-(N>>3)]>>(N&7)&1)
 #define SETBIT(IN,N,V) ((IN)[(SIZE-1)-(N>>3)]=(((IN)[(SIZE-1)-(N>>3)]|((V)<<(N&7))&(V)<<(N&7))))
-#define COPY(A,B) (memcpy((A),(B),SIZE))
 
 int leftmostbit(bignum a)
 {

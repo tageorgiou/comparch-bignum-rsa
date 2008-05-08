@@ -1,3 +1,7 @@
+#include <string.h>
+#define SIZE 128
+#define COPY(A,B) (memcpy((A),(B),SIZE))
+
 typedef unsigned char* bignum;
 void printbin(bignum a);
 void add(bignum a,bignum b);
