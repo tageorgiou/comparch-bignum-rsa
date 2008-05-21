@@ -90,7 +90,8 @@ int main(int argc, char* argv[])
 	printnum(tmp.y);
 	bignum d = tmp.x;
 	bignum zeronum = zero();
-	if (cmp(d,zeronum) < 0) {
+	if (cmp(d,zeronum) > 0) {
+		printf("making d positive!\n");
 		add(d,t);
 	}
 	printnum(d);
@@ -106,6 +107,7 @@ int main(int argc, char* argv[])
 				m[i] = 0;
 		}
 		bignum out = bignum_from_int(*(unsigned int*)m);
+		printf("encnum:%d\n",*(unsigned int*)m);
 		kapow(out,e,n);
 		long long outnum = long_from_bignum(out);
 		fwrite(&outnum,1,8,fout);
