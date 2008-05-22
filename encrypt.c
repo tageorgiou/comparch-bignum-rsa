@@ -110,6 +110,7 @@ int main(int argc, char* argv[])
 		printf("encnum:%d\n",*(unsigned int*)m);
 		kapow(out,e,n);
 		long long outnum = long_from_bignum(out);
+		printf("%lld\n",outnum);
 		fwrite(&outnum,1,8,fout);
 	}
 /*	bignum p = 54121, q = 48733;
